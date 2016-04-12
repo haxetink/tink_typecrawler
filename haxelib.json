@@ -5,13 +5,13 @@
 		"tink",
 		"macro"
 	],
-  "website": "http://haxetink.org/tink_typecrawler/",
 	"classPath": "src",
 	"contributors": [
 		"back2dos"
 	],
-	"releasenote": "Added support for cpp, cs and java.",
-	"version": "0.0.3",
+	"website": "http://haxetink.org/tink_typecrawler/",
+	"releasenote": "First release.",
+	"version": "0.0.1",
 	"dependencies": {
 		"tink_macro": ""
 	}
