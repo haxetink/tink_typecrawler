@@ -87,7 +87,6 @@ class Crawler {
                 pos: pos,
                 kind: FFun(gen.anon(serializableFields(fields.get().fields), ct)),
               }]);
-              //add(gen.anon(fields.get().fields, t.toComplex()));
               
             }
             
@@ -154,7 +153,7 @@ class Crawler {
             }
             
             gen.enm(constructors, t.toComplex(), genType);
-            
+          
           case v: 
             pos.error(gen.reject(t));
         }
