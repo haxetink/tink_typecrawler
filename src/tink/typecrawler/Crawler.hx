@@ -97,7 +97,7 @@ class Crawler {
             
             gen.array(genType(t, pos));
           
-          case TDynamic(t):
+          case TDynamic(t) if (t != null):
             
             gen.dyn(gen.dynAccess(genType(t, pos)), t.toComplex());
           
@@ -152,10 +152,13 @@ class Crawler {
               });
             }
             
-            gen.enm(constructors, t.toComplex(), genType);
+            gen.enm(constructors, t.toComplex(), pos, genType);
           
           case v: 
-            pos.error(gen.reject(t));
+            switch gen.rescue(t, pos, genType) {
+              case None: pos.error(gen.reject(t));
+              case Some(e): e;
+            }
         }
         
   function serializableFields(fields:Array<ClassField>):Array<FieldInfo> {

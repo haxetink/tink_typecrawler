@@ -3,6 +3,7 @@ package tink.typecrawler;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 import tink.typecrawler.FieldInfo;
+import haxe.ds.Option;
 
 typedef GenType = Type->Position->Expr;
 
@@ -20,7 +21,8 @@ typedef Generator = {
   function anon(fields:Array<FieldInfo>, ct:ComplexType):Function;
   function array(e:Expr):Expr;
   function map(k:Expr, v:Expr):Expr;
-  function enm(constructors:Array<EnumConstructor>, ct:ComplexType, gen:GenType):Expr;
+  function enm(constructors:Array<EnumConstructor>, ct:ComplexType, pos:Position, gen:GenType):Expr;
+  function rescue(t:Type, pos:Position, gen:GenType):Option<Expr>;
   function reject(t:Type):String;
 }
 
