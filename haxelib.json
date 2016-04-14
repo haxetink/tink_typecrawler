@@ -10,8 +10,8 @@
 		"back2dos"
 	],
 	"website": "http://haxetink.org/tink_typecrawler/",
-	"releasenote": "First release.",
-	"version": "0.0.1",
+	"releasenote": "Allow handling all types in rescue callback.",
+	"version": "0.1.0",
 	"dependencies": {
 		"tink_macro": ""
 	}
