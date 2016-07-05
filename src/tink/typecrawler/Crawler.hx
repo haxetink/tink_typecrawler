@@ -111,7 +111,7 @@ class Crawler {
             
           case plainAbstract(_) => Some(a):
             
-            genType(a, pos);              
+            genType(a, pos);     
             
           case TEnum(_.get() => e, params):
             
@@ -161,7 +161,7 @@ class Crawler {
             }
         }
         
-  function serializableFields(fields:Array<ClassField>):Array<FieldInfo> {
+  function serializableFields(fields:Array<ClassField>):Array<FieldInfo> {//TODO: this clearly does not belong here
     
     var ret = new Array<FieldInfo>();
     
