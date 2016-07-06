@@ -1,5 +1,7 @@
 # Tink Type Crawler
 
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/haxetink/public)
+
 This library is for the crazy scientists. You have been warned.
 
 The purpose of this library is to establish a common infrastructure upon which macro based data structure processors can be written, e.g. tink_json which uses compile time type information to generate parsers and serializers. Similarly, tink_xml and tink_serialize are good candidates.
