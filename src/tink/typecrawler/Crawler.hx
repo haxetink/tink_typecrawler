@@ -142,7 +142,7 @@ class Crawler {
                       pos: c.pos 
                     }];
                   default:
-                    c.pos.error('constructor has no arguments');
+                    [];
                 }
               
               constructors.push({
