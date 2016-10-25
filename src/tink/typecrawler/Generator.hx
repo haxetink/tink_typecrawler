@@ -18,7 +18,7 @@ typedef Generator = {
   function bool():Expr;
   function date():Expr;
   function bytes():Expr;
-  function anon(fields:Array<FieldInfo>, ct:ComplexType):Function;
+  function anon(fields:Array<FieldInfo>, ct:ComplexType):Function;//TODO: find out why I wanted this to be a function ... I have a feeling that it's just an artifact of an intermediary state of this code
   function array(e:Expr):Expr;
   function map(k:Expr, v:Expr):Expr;
   function enm(constructors:Array<EnumConstructor>, ct:ComplexType, pos:Position, gen:GenType):Expr;
