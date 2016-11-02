@@ -8,5 +8,6 @@ typedef FieldInfo = {
   pos:Position,
   type:Type,
   expr:Expr,
-  optional:Bool
+  optional:Bool,
+  meta:Metadata,
 }

@@ -142,7 +142,8 @@ class Crawler {
                         type: f.type, 
                         expr: genType(f.type, f.pos),
                         optional: f.meta.has(':optional'), 
-                        pos: f.pos 
+                        pos: f.pos,
+                        meta: f.meta.get(),
                       }];
                     case TFun(args, ret):
                       [for (a in args) { 
@@ -150,7 +151,8 @@ class Crawler {
                         type: a.t, 
                         expr: genType(a.t, c.pos), 
                         optional: a.opt, 
-                        pos: c.pos 
+                        pos: c.pos,
+                        meta: [], // TODO: meta is lost?
                       }];
                     default:
                       [];
@@ -185,6 +187,7 @@ class Crawler {
         type: f.type,
         optional: f.meta.has(':optional'),
         expr: genType(f.type, f.pos),
+        meta: f.meta.get(),
       });
       
     for (f in fields)
