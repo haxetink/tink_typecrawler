@@ -128,7 +128,6 @@ class Crawler {
             
             cached(t, pos, function () {
               var constructors = [];
-              
               for (name in e.names) {
                 
                 var c = e.constructs[name],
@@ -154,7 +153,7 @@ class Crawler {
                         pos: c.pos 
                       }];
                     default:
-                      c.pos.error('constructor has no arguments');
+                      [];
                   }
                 
                 constructors.push({
