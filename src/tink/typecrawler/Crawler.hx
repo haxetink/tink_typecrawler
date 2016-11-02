@@ -163,13 +163,14 @@ class Crawler {
                 });
               }
               var ct = t.toComplex();
-              return func(gen.enm(constructors, ct, pos, genType), ct);
+              var e = gen.enm(constructors, ct, pos, genType);
+              return func(e, e.typeof().sure().toComplex());
             });
           
           case v: 
             cached(t, pos, function () return switch gen.rescue(t, pos, genType) {
               case None: pos.error(gen.reject(t));
-              case Some(e): func(e, t.toComplex());
+              case Some(e): func(e, e.typeof().sure().toComplex());
             });
             
         }
