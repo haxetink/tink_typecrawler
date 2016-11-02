@@ -10,9 +10,9 @@ using tink.MacroApi;
 
 class Crawler { 
   
-  var ret:Array<Field>;
+  var ret:Array<Field> = [];
   var gen:Generator;
-  var anons:Map<String, Type>;
+  var cache = new Map<String, Type>();
   
   static public function crawl(type:Type, pos:Position, gen:Generator) {
     var c = new Crawler(gen, type, pos);
@@ -25,11 +25,49 @@ class Crawler {
     }
   }
   
-  function new(gen, type:Type, pos:Position) {
-    this.gen = gen;
-    ret = [];
-    anons = new Map();
+  function func(e:Expr, ret:ComplexType):Function 
+    return {
+      expr: macro @:pos(e.pos) return $e,
+      ret: ret,
+      args: [for (a in gen.args()) { name: a, type: null }]
+    }
+  
+  function cached(t:Type, pos:Position, make:Void->Function) {
+    var method = null;
     
+    for (func in cache.keys()) {
+      
+      var known = cache[func];
+      
+      if (typesEqual(t, known)) {
+        method = func;
+        break;
+      }
+      
+    }
+    
+    if (method == null) {
+      method = 'parse${Lambda.count(cache)}';
+      
+      cache[method] = t;
+      
+      var ct = t.toComplex();
+      
+      add([{
+        name: method,
+        pos: pos,
+        kind: FFun(make()),
+      }]);
+      
+    }    
+    
+    var args = [for (s in gen.args()) s.resolve()];
+    
+    return macro this.$method($a{args});
+  }
+  
+  function new(gen, type:Type, pos:Position) {
+    this.gen = gen;    
   }  
     
   function add(a:Array<Field>)
@@ -62,36 +100,9 @@ class Crawler {
            
           case TAnonymous(fields):
             
-            var method = null;
-            
-            for (func in anons.keys()) {
-              
-              var known = anons[func];
-              
-              if (typesEqual(t, known)) {
-                method = func;
-                break;
-              }
-              
-            }
-            
-            if (method == null) {
-              method = 'anon${Lambda.count(anons)}';
-              
-              anons[method] = t;
-              
-              var ct = t.toComplex();
-              
-              add([{
-                name: method,
-                pos: pos,
-                kind: FFun(gen.anon(serializableFields(fields.get().fields), ct)),
-              }]);
-              
-            }
-            
-            var args = [for (s in gen.args()) s.resolve()];
-            macro this.$method($a{args});
+            cached(t, pos, function () 
+              return gen.anon(serializableFields(fields.get().fields), t.toComplex())
+            );
             
           case TInst(_.get() => { name: 'Array', pack: [] }, [t]):
             
@@ -101,9 +112,9 @@ class Crawler {
             
             gen.dyn(gen.dynAccess(genType(t, pos)), t.toComplex());
           
-          case TAbstract(_.get() => { name: 'DynamicAccess', pack: ['haxe'] }, [t]):
+          case TAbstract(_.get() => { name: 'DynamicAccess', pack: ['haxe'] }, [v]): //TODO: if we capture the param as "t" here, weird errors occur
             
-            gen.dynAccess(genType(t, pos));
+            gen.dynAccess(genType(v, pos));
             
           case TAbstract(_.get() => { name: 'Map', pack: [] }, [k, v]):
             
@@ -111,57 +122,59 @@ class Crawler {
             
           case plainAbstract(_) => Some(a):
             
-            genType(a, pos);              
+            genType(a, pos);     
             
           case TEnum(_.get() => e, params):
             
-            var constructors = [];
-            
-            for (name in e.names) {
-              
-              var c = e.constructs[name],
-                  inlined = false;
-                  
-              var cfields = 
-                switch c.type.applyTypeParameters(e.params, params).reduce() {
-                  case TFun([{ name: name, t: TAnonymous(anon) }], ret) if (name.toLowerCase() == c.name.toLowerCase()):
-                    inlined = true;
-                    [for (f in anon.get().fields) { 
-                      name: f.name, 
-                      type: f.type, 
-                      expr: genType(f.type, f.pos),
-                      optional: f.meta.has(':optional'), 
-                      pos: f.pos 
-                    }];
-                  case TFun(args, ret):
-                    [for (a in args) { 
-                      name: a.name, 
-                      type: a.t, 
-                      expr: genType(a.t, c.pos), 
-                      optional: a.opt, 
-                      pos: c.pos 
-                    }];
-                  default:
-                    [];
-                }
-              
-              constructors.push({
-                inlined: inlined,
-                ctor: c,
-                fields: cfields,
-              });
-            }
-            
-            gen.enm(constructors, t.toComplex(), pos, genType);
+            cached(t, pos, function () {
+              var constructors = [];
+              for (name in e.names) {
+                
+                var c = e.constructs[name],
+                    inlined = false;
+                
+                var cfields = 
+                  switch c.type.applyTypeParameters(e.params, params).reduce() {
+                    case TFun([{ name: name, t: _.reduce() => TAnonymous(anon) }], ret) if (name.toLowerCase() == c.name.toLowerCase()):
+                      inlined = true;
+                      [for (f in anon.get().fields) { 
+                        name: f.name, 
+                        type: f.type, 
+                        expr: genType(f.type, f.pos),
+                        optional: f.meta.has(':optional'), 
+                        pos: f.pos 
+                      }];
+                    case TFun(args, ret):
+                      [for (a in args) { 
+                        name: a.name, 
+                        type: a.t, 
+                        expr: genType(a.t, c.pos), 
+                        optional: a.opt, 
+                        pos: c.pos 
+                      }];
+                    default:
+                      [];
+                  }
+                
+                constructors.push({
+                  inlined: inlined,
+                  ctor: c,
+                  fields: cfields,
+                });
+              }
+              var ct = t.toComplex();
+              return func(gen.enm(constructors, ct, pos, genType), ct);
+            });
           
           case v: 
-            switch gen.rescue(t, pos, genType) {
+            cached(t, pos, function () return switch gen.rescue(t, pos, genType) {
               case None: pos.error(gen.reject(t));
-              case Some(e): e;
-            }
+              case Some(e): func(e, t.toComplex());
+            });
+            
         }
         
-  function serializableFields(fields:Array<ClassField>):Array<FieldInfo> {
+  function serializableFields(fields:Array<ClassField>):Array<FieldInfo> {//TODO: this clearly does not belong here
     
     var ret = new Array<FieldInfo>();
     
