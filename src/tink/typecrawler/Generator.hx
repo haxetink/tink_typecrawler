@@ -8,7 +8,8 @@ import haxe.ds.Option;
 typedef GenType = Type->Position->Expr;
 
 typedef Generator = {
-  function args():Array<String>;
+  //function args():Array<String>;
+  function wrap(placeholder:Expr, ct:ComplexType):Function;
   function nullable(e:Expr):Expr;
   function string():Expr;
   function float():Expr;
@@ -18,7 +19,7 @@ typedef Generator = {
   function bool():Expr;
   function date():Expr;
   function bytes():Expr;
-  function anon(fields:Array<FieldInfo>, ct:ComplexType):Function;//TODO: find out why I wanted this to be a function ... I have a feeling that it's just an artifact of an intermediary state of this code
+  function anon(fields:Array<FieldInfo>, ct:ComplexType):Expr;
   function array(e:Expr):Expr;
   function map(k:Expr, v:Expr):Expr;
   function enm(constructors:Array<EnumConstructor>, ct:ComplexType, pos:Position, gen:GenType):Expr;

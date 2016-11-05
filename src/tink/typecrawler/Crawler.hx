@@ -12,7 +12,7 @@ class Crawler {
   
   var ret:Array<Field> = [];
   var gen:Generator;
-  var cache = new Map<String, Type>();
+  var cache = new Map<String, { type: Type, expr: Expr }>();
   
   static public function crawl(type:Type, pos:Position, gen:Generator) {
     var c = new Crawler(gen, type, pos);
@@ -25,21 +25,12 @@ class Crawler {
     }
   }
   
-  function func(e:Expr, ret:ComplexType):Function 
-    return {
-      expr: macro @:pos(e.pos) return $e,
-      ret: ret,
-      args: [for (a in gen.args()) { name: a, type: null }]
-    }
-  
-  function cached(t:Type, pos:Position, make:Void->Function) {
+  function cached(t:Type, pos:Position, make:Void->Expr) {
     var method = null;
     
     for (func in cache.keys()) {
       
-      var known = cache[func];
-      
-      if (typesEqual(t, known)) {
+      if (typesEqual(t, cache[func].type)) {
         method = func;
         break;
       }
@@ -47,24 +38,37 @@ class Crawler {
     }
     
     if (method == null) {
-      method = 'parse${Lambda.count(cache)}';
       
-      cache[method] = t;
+      method = 'parse${Lambda.count(cache)}';
+            
+      var placeholder = macro @:pos(pos) null;
       
       var ct = t.toComplex();
+      var func = gen.wrap(placeholder, t.toComplex());      
+      var args = [for (a in func.args) a.name.resolve()];
+      
+      cache[method] = {
+        expr: macro this.$method($a{args}),
+        type: t,
+      }
       
       add([{
         name: method,
         pos: pos,
-        kind: FFun(make()),
+        kind: FFun(func),
       }]);
+      
+      var impl = make();
+      
+      placeholder.expr = impl.expr;
+      placeholder.pos = impl.pos;
       
     }    
     
-    var args = [for (s in gen.args()) s.resolve()];
-    
-    return macro this.$method($a{args});
+    return cache[method].expr;
   }
+  
+  var methodCalls = new Map<String, Expr>();
   
   function new(gen, type:Type, pos:Position) {
     this.gen = gen;    
@@ -165,20 +169,16 @@ class Crawler {
                 });
               }
               var ct = t.toComplex();
-              var e = gen.enm(constructors, ct, pos, genType);
-              return func(e, complexTypeOf(e).orNull());
+              return gen.enm(constructors, ct, pos, genType);
             });
           
           case v: 
             cached(t, pos, function () return switch gen.rescue(t, pos, genType) {
               case None: pos.error(gen.reject(t));
-              case Some(e): func(e, complexTypeOf(e).orNull());
+              case Some(e): e; 
             });
             
         }
-        
-  function complexTypeOf(e:Expr) // TODO: move this to tink_macro?
-    return e.typeof().map(function(t) return t.toComplex());
         
   function serializableFields(fields:Array<ClassField>):Array<FieldInfo> {//TODO: this clearly does not belong here
     
