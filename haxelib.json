@@ -14,5 +14,6 @@
 	"version": "0.3.0",
 	"dependencies": {
 		"tink_macro": ""
-	}
+	},
+	"url": "http://haxetink.org/tink_typecrawler"
 }
