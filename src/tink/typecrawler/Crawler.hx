@@ -193,17 +193,8 @@ class Crawler {
     return ret;
   }
   
-  static function typesEquivalent(t1, t2) {
-    return switch [t1, t2] {
-      case [TDynamic(null), TDynamic(null)]: true;
-      case [TDynamic(null), _]: false;
-      case [_, TDynamic(null)]: false;
-      default: Context.unify(t1, t2) && Context.unify(t2, t1);
-    }
-  }
-  
   static public function typesEqual(t1, t2)
-    return typesEquivalent(t1, t2);//TODO: make this more exact
+    return Context.unify(t1, t2) && Context.unify(t2, t1);//TODO: make this more exact
   
   static public function plainAbstract(t:Type)
     return switch t.reduce() {
