@@ -12,7 +12,7 @@ class Crawler {
   
   var ret:Array<Field> = [];
   var gen:Generator;
-  var cache = new Map<String, { type: Type, expr: Expr }>();
+  var cache = new tink.macro.TypeMap<Expr>();
   
   static public function crawl(type:Type, pos:Position, gen:Generator) {
     var c = new Crawler(gen, type, pos);
@@ -25,48 +25,34 @@ class Crawler {
     }
   }
   
-  function cached(t:Type, pos:Position, make:Void->Expr) {
-    var method = null;
-    
-    for (func in cache.keys()) {
-      
-      if (typesEqual(t, cache[func].type)) {
-        method = func;
-        break;
-      }
-      
+  function cached(t:Type, pos:Position, make:Void->Expr) 
+    return switch cache.get(t) {
+      case null:
+        var method = 'parse${Lambda.count(cache)}';
+              
+        var placeholder = macro @:pos(pos) null;
+        
+        var ct = t.toComplex();
+        var func = gen.wrap(placeholder, t.toComplex());      
+        var args = [for (a in func.args) a.name.resolve()];
+        
+        var call = macro @:pos(pos) this.$method($a{args});
+        cache.set(t, call);
+
+        add([{
+          name: method,
+          pos: pos,
+          kind: FFun(func),
+        }]);
+        
+        var impl = make();
+        
+        placeholder.expr = impl.expr;
+        placeholder.pos = impl.pos;
+        
+        call;
+      case v: v;
     }
-    
-    if (method == null) {
-      
-      method = 'parse${Lambda.count(cache)}';
-            
-      var placeholder = macro @:pos(pos) null;
-      
-      var ct = t.toComplex();
-      var func = gen.wrap(placeholder, t.toComplex());      
-      var args = [for (a in func.args) a.name.resolve()];
-      
-      cache[method] = {
-        expr: macro this.$method($a{args}),
-        type: t,
-      }
-      
-      add([{
-        name: method,
-        pos: pos,
-        kind: FFun(func),
-      }]);
-      
-      var impl = make();
-      
-      placeholder.expr = impl.expr;
-      placeholder.pos = impl.pos;
-      
-    }    
-    
-    return cache[method].expr;
-  }
   
   var methodCalls = new Map<String, Expr>();
   
