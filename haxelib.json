@@ -10,10 +10,10 @@
 		"back2dos"
 	],
 	"website": "http://haxetink.org/tink_typecrawler/",
-	"releasenote": "Simplified API.",
-	"version": "0.3.0",
+	"releasenote": "More exact caching.",
+	"version": "0.3.1",
+	"url": "http://haxetink.org/tink_typecrawler",
 	"dependencies": {
 		"tink_macro": ""
-	},
-	"url": "http://haxetink.org/tink_typecrawler"
+	}
 }
