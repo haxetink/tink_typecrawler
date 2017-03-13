@@ -7,15 +7,19 @@ import haxe.ds.Option;
 
 using haxe.macro.Tools;
 using tink.MacroApi;
+using tink.CoreApi;
+
+typedef Drive = Type->Position->(Type->Position->Expr)->Expr;
 
 class Crawler { 
   
   var ret:Array<Field> = [];
   var gen:Generator;
   var cache = new tink.macro.TypeMap<Expr>();
+  var drive:Drive;
   
-  static public function crawl(type:Type, pos:Position, gen:Generator) {
-    var c = new Crawler(gen, type, pos);
+  static public function crawl(type:Type, pos:Position, gen:Generator, ?drive:Drive) {
+    var c = new Crawler(gen, drive);
     
     var expr = c.genType(type, pos);
     
@@ -56,14 +60,20 @@ class Crawler {
   
   var methodCalls = new Map<String, Expr>();
   
-  function new(gen, type:Type, pos:Position) {
+  function new(gen, drive) {
     this.gen = gen;    
+    this.drive = drive;
   }  
     
   function add(a:Array<Field>)
     ret = ret.concat(a);
   
-  function genType(t:Type, pos:Position):Expr 
+  function genType(t:Type, pos:Position):Expr
+    return 
+      if (drive == null) doGenType(t, pos);
+      else drive(t, pos, doGenType);
+
+  function doGenType(t:Type, pos:Position):Expr 
     return
       if (t.getID(false) == 'Null')
         gen.nullable(genType(t.reduce(), pos));

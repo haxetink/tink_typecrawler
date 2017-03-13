@@ -9,7 +9,6 @@
 	"contributors": [
 		"back2dos"
 	],
-	"website": "http://haxetink.org/tink_typecrawler/",
 	"releasenote": "More exact caching.",
 	"version": "0.3.1",
 	"url": "http://haxetink.org/tink_typecrawler",
