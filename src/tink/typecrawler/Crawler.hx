@@ -111,6 +111,10 @@ class Crawler {
           case TDynamic(t) if (t != null):
             
             gen.dyn(gen.dynAccess(genType(t, pos)), t.toComplex());
+            
+          case TAbstract(_.get() => {meta: meta, impl: _.get() => _.statics.get() => statics, type: u}, _) if(meta.has(':enum')):
+          
+            gen.enumAbstract([for(s in statics) s.name], genType(u, pos));
           
           case TAbstract(_.get() => { name: 'DynamicAccess', pack: ['haxe'] }, [v]): //TODO: if we capture the param as "t" here, weird errors occur
             
