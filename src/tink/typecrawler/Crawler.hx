@@ -111,7 +111,11 @@ class Crawler {
             
           case TAbstract(_.get() => {meta: meta, impl: _.get() => _.statics.get() => statics, type: u}, _) if(meta.has(':enum')):
           
-            gen.enumAbstract([for(s in statics) s.name], genType(u, pos));
+            var id = t.getID();
+            var names = statics
+              .filter(function(s) return s.kind.match(FVar(_)) && s.isPublic && s.type.getID() == id)
+              .map(function(s) return s.name);
+            gen.enumAbstract(names, genType(u, pos));
           
           case TAbstract(_.get() => { name: 'DynamicAccess', pack: ['haxe'] }, [v]): //TODO: if we capture the param as "t" here, weird errors occur
             
