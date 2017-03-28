@@ -33,8 +33,10 @@ class RunTests {
   static public function enm(constructors:Array<EnumConstructor>, ct:ComplexType, pos:Position, gen:GenType):Expr return throw 'abstract';
   static public function rescue(t:Type, pos:Position, gen:GenType):Option<Expr> return throw 'abstract';
   static public function reject(t:Type):String return throw 'abstract';
+  static public function shouldIncludeField(c:ClassField, owner:Option<ClassType>):Bool return true;
+  static public function drive(type:Type, pos:Position, gen:Type->Position->Expr):Expr return macro 'it works';
   #end
   macro static function test() {
-    return Crawler.crawl(haxe.macro.Context.getType('String'), (macro null).pos, RunTests, function (_, _, _) return macro 'it works').expr;
+    return Crawler.crawl(haxe.macro.Context.getType('String'), (macro null).pos, RunTests).expr;
   }
 }

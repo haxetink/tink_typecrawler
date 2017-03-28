@@ -25,6 +25,8 @@ typedef Generator = {
   function enm(constructors:Array<EnumConstructor>, ct:ComplexType, pos:Position, gen:GenType):Expr;
   function rescue(t:Type, pos:Position, gen:GenType):Option<Expr>;
   function reject(t:Type):String;
+  function shouldIncludeField(c:ClassField, owner:Option<ClassType>):Bool;
+  function drive(type:Type, pos:Position, gen:Type->Position->Expr):Expr;
 }
 
 typedef EnumConstructor = {
