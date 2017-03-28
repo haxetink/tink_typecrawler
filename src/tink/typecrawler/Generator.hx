@@ -25,10 +25,27 @@ typedef Generator = {
   function enm(constructors:Array<EnumConstructor>, ct:ComplexType, pos:Position, gen:GenType):Expr;
   function rescue(t:Type, pos:Position, gen:GenType):Option<Expr>;
   function reject(t:Type):String;
+  function shouldIncludeField(c:ClassField, owner:Option<ClassType>):Bool;
+  function drive(type:Type, pos:Position, gen:Type->Position->Expr):Expr;
 }
 
 typedef EnumConstructor = {
   inlined:Bool, 
   ctor: EnumField,
   fields:Array<FieldInfo>,  
+}
+
+class Helper {
+  public static function shouldIncludeField(f:ClassField, owner:Option<ClassType>):Bool {
+    if (!f.meta.has(':transient'))
+      switch f.kind {
+        case FVar(AccNever | AccCall, AccNever | AccCall):
+          if (f.meta.has(':isVar'))
+            return true;
+        case FVar(read, write):
+          return true;
+        default:
+      }
+    return false;
+  }
 }
