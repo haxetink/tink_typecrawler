@@ -9,17 +9,14 @@ using haxe.macro.Tools;
 using tink.MacroApi;
 using tink.CoreApi;
 
-typedef Drive = Type->Position->(Type->Position->Expr)->Expr;
-
 class Crawler { 
   
   var ret:Array<Field> = [];
   var gen:Generator;
   var cache = new tink.macro.TypeMap<Expr>();
-  var drive:Drive;
   
-  static public function crawl(type:Type, pos:Position, gen:Generator, ?drive:Drive) {
-    var c = new Crawler(gen, drive);
+  static public function crawl(type:Type, pos:Position, gen:Generator) {
+    var c = new Crawler(gen);
     
     var expr = c.genType(type, pos);
     
@@ -60,18 +57,15 @@ class Crawler {
   
   var methodCalls = new Map<String, Expr>();
   
-  function new(gen, drive) {
-    this.gen = gen;    
-    this.drive = drive;
+  function new(gen) {
+    this.gen = gen;
   }  
     
   function add(a:Array<Field>)
     ret = ret.concat(a);
   
   function genType(t:Type, pos:Position):Expr
-    return 
-      if (drive == null) doGenType(t, pos);
-      else drive(t, pos, doGenType);
+    return gen.drive(t, pos, doGenType);
 
   function doGenType(t:Type, pos:Position):Expr 
     return
@@ -100,9 +94,12 @@ class Crawler {
            
           case TAnonymous(fields):
             
-            cached(t, pos, function () 
-              return gen.anon(serializableFields(fields.get().fields), t.toComplex())
-            );
+            cached(t, pos, function () {
+              var info = fields.get().fields
+                .filter(gen.shouldIncludeField.bind(_, None))
+                .map(convertField);
+              return gen.anon(info, t.toComplex());
+            });
             
           case TInst(_.get() => { name: 'Array', pack: [] }, [t]):
             
@@ -180,31 +177,15 @@ class Crawler {
             
         }
         
-  function serializableFields(fields:Array<ClassField>):Array<FieldInfo> {//TODO: this clearly does not belong here
-    
-    var ret = new Array<FieldInfo>();
-    
-    function add(f:ClassField)
-      ret.push({
-        name: f.name,
-        pos: f.pos,
-        type: f.type,
-        optional: f.meta.has(':optional'),
-        expr: genType(f.type, f.pos),
-        meta: f.meta.get(),
-      });
-      
-    for (f in fields)
-      if (!f.meta.has(':transient'))
-        switch f.kind {
-          case FVar(AccNever | AccCall, AccNever | AccCall):
-            if (f.meta.has(':isVar'))
-              add(f);
-          case FVar(read, write):
-            add(f);
-          default:
-        }
-    return ret;
+  function convertField(f:ClassField):FieldInfo {
+    return {
+      name: f.name,
+      pos: f.pos,
+      type: f.type,
+      optional: f.meta.has(':optional'),
+      expr: genType(f.type, f.pos),
+      meta: f.meta.get(),
+    }
   }
   
   static public function typesEqual(t1, t2)
