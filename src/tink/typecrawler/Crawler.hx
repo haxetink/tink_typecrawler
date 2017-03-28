@@ -183,33 +183,6 @@ class Crawler {
       meta: f.meta.get(),
     }
   }
-        
-  // function serializableFields(fields:Array<ClassField>):Array<FieldInfo> {//TODO: this clearly does not belong here
-    
-  //   var ret = new Array<FieldInfo>();
-    
-  //   function add(f:ClassField)
-  //     ret.push({
-  //       name: f.name,
-  //       pos: f.pos,
-  //       type: f.type,
-  //       optional: f.meta.has(':optional'),
-  //       expr: genType(f.type, f.pos),
-  //       meta: f.meta.get(),
-  //     });
-      
-  //   for (f in fields)
-  //     if (!f.meta.has(':transient'))
-  //       switch f.kind {
-  //         case FVar(AccNever | AccCall, AccNever | AccCall):
-  //           if (f.meta.has(':isVar'))
-  //             add(f);
-  //         case FVar(read, write):
-  //           add(f);
-  //         default:
-  //       }
-  //   return ret;
-  // }
   
   static public function typesEqual(t1, t2)
     return Context.unify(t1, t2) && Context.unify(t2, t1);//TODO: make this more exact
