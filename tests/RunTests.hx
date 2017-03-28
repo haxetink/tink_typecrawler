@@ -31,6 +31,7 @@ class RunTests {
   static public function array(e:Expr):Expr return throw 'abstract';
   static public function map(k:Expr, v:Expr):Expr return throw 'abstract';
   static public function enm(constructors:Array<EnumConstructor>, ct:ComplexType, pos:Position, gen:GenType):Expr return throw 'abstract';
+  static public function enumAbstract(names:Array<String>, e:Expr):Expr return throw 'abstract';
   static public function rescue(t:Type, pos:Position, gen:GenType):Option<Expr> return throw 'abstract';
   static public function reject(t:Type):String return throw 'abstract';
   static public function shouldIncludeField(c:ClassField, owner:Option<ClassType>):Bool return true;
