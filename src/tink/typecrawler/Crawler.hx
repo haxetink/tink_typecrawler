@@ -109,8 +109,8 @@ class Crawler {
             
             gen.dyn(gen.dynAccess(genType(t, pos)), t.toComplex());
             
-          case TAbstract(_.get() => {meta: meta, impl: _.get() => _.statics.get() => statics, type: u}, _) if(meta.has(':enum')):
-          
+          case TAbstract(_.get() => {meta: meta, impl: impl, type: u}, _) if(meta.has(':enum')):
+            var statics = impl.get().statics.get();
             var id = t.getID();
             var names = statics
               .filter(function(s) return s.kind.match(FVar(_)) && s.isPublic && s.type.getID() == id)
