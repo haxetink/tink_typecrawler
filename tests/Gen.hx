@@ -24,7 +24,7 @@ class Gen {
   public function array(e:Expr):Expr return throw 'abstract';
   public function map(k:Expr, v:Expr):Expr return throw 'abstract';
   public function enm(constructors:Array<EnumConstructor>, ct:ComplexType, pos:Position, gen:GenType):Expr return throw 'abstract';
-  public function enumAbstract(names:Array<String>, e:Expr):Expr return throw 'abstract';
+  public function enumAbstract(names:Array<Expr>, e:Expr, ct:ComplexType, pos:Position):Expr return throw 'abstract';
   public function rescue(t:Type, pos:Position, gen:GenType):Option<Expr> return throw 'abstract';
   public function reject(t:Type):String return throw 'abstract';
   public function shouldIncludeField(c:ClassField, owner:Option<ClassType>):Bool return true;

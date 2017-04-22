@@ -109,13 +109,15 @@ class Crawler {
             
             gen.dyn(gen.dynAccess(genType(t, pos)), t.toComplex());
             
-          case TAbstract(_.get() => {meta: meta, impl: impl, type: u}, _) if(meta.has(':enum')):
+          case TAbstract(_.get() => {meta: meta, impl: impl, type: underlying, name: name, module: module}, _) if(meta.has(':enum')):
+          
             var statics = impl.get().statics.get();
+            var path = ('$module.$name').split('.');
             var id = t.getID();
             var names = statics
               .filter(function(s) return s.kind.match(FVar(_)) && s.isPublic && s.type.getID() == id)
-              .map(function(s) return s.name);
-            gen.enumAbstract(names, genType(u, pos));
+              .map(function(s) return macro $p{path.concat([s.name])});
+            gen.enumAbstract(names, genType(underlying, pos), t.toComplex(), pos);
           
           case TAbstract(_.get() => { name: 'DynamicAccess', pack: ['haxe'] }, [v]): //TODO: if we capture the param as "t" here, weird errors occur
             

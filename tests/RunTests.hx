@@ -7,7 +7,7 @@ class RunTests {
   static function main() {
     
     Runner.run(TestBatch.make([
-      new EnumAbstractTest(),
+      new cases.EnumAbstractTest(),
     ])).handle(Runner.exit);
   }
   
