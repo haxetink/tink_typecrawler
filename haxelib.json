@@ -9,8 +9,8 @@
 	"contributors": [
 		"back2dos"
 	],
-	"releasenote": "API overhaul.",
-	"version": "0.5.0",
+	"releasenote": "Various improvements.",
+	"version": "0.5.1",
 	"url": "http://haxetink.org/tink_typecrawler",
 	"dependencies": {
 		"tink_macro": ""
