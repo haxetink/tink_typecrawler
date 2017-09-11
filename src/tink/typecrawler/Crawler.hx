@@ -69,8 +69,12 @@ class Crawler {
 
   function doGenType(t:Type, pos:Position):Expr 
     return
-      if (t.getID(false) == 'Null')
-        gen.nullable(genType(t.reduce(), pos));
+      if (t.getID(false) == 'Null') {
+        do {
+          t = t.reduce(true);
+        } while (t.getID(false) == 'Null');
+        gen.nullable(genType(t, pos));
+      }
       else
         switch t.reduce() {
           
