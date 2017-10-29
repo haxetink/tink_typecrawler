@@ -148,23 +148,13 @@ class Crawler {
                   switch c.type.applyTypeParameters(e.params, params).reduce() {
                     case TFun([{ name: name, t: _.reduce() => TAnonymous(anon) }], ret) if (name.toLowerCase() == c.name.toLowerCase()):
                       inlined = true;
-                      [for (f in anon.get().fields) { 
-                        name: f.name, 
-                        type: f.type, 
-                        expr: genType(f.type, f.pos),
-                        optional: f.meta.has(':optional'), 
-                        pos: f.pos,
-                        meta: f.meta.get(),
-                      }];
+                      [for (f in anon.get().fields) convertField(f)];
                     case TFun(args, ret):
-                      [for (a in args) { 
-                        name: a.name, 
-                        type: a.t, 
-                        expr: genType(a.t, c.pos), 
-                        optional: a.opt, 
-                        pos: c.pos,
-                        meta: [], // TODO: meta is lost?
-                      }];
+                      [for (a in args) makeInfo(
+                        { name: a.name, type: a.t, pos: c.pos }, 
+                        a.opt, 
+                        []// TODO: meta is lost?
+                      )];
                     default:
                       [];
                   }
@@ -187,16 +177,11 @@ class Crawler {
             
         }
         
-  function convertField(f:ClassField):FieldInfo {
-    return {
-      name: f.name,
-      pos: f.pos,
-      type: f.type,
-      optional: f.meta.has(':optional'),
-      expr: genType(f.type, f.pos),
-      meta: f.meta.get(),
-    }
-  }
+  function convertField(f:ClassField):FieldInfo 
+    return FieldInfo.ofClassField(f, genType);
+
+  function makeInfo(part, optional, meta):FieldInfo 
+    return new FieldInfo(part, genType, optional, meta);
   
   static public function typesEqual(t1, t2)
     return Context.unify(t1, t2) && Context.unify(t2, t1);//TODO: make this more exact
