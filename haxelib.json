@@ -1,18 +1,18 @@
 {
 	"name": "tink_typecrawler",
-	"license": "MIT",
+	"classPath": "src",
+	"dependencies": {
+		"tink_macro": ""
+	},
+	"url": "http://haxetink.org/tink_typecrawler",
+	"contributors": [
+		"back2dos"
+	],
+	"version": "0.6.0",
+	"releasenote": "Make FieldInfo a class with slightly extended functionality.",
 	"tags": [
 		"tink",
 		"macro"
 	],
-	"classPath": "src",
-	"contributors": [
-		"back2dos"
-	],
-	"releasenote": "Be careful when following Null<T>.",
-	"version": "0.5.2",
-	"url": "http://haxetink.org/tink_typecrawler",
-	"dependencies": {
-		"tink_macro": ""
-	}
+	"license": "MIT"
 }
