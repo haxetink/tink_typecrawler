@@ -71,7 +71,14 @@ class Crawler {
     return
       if (t.getID(false) == 'Null') {
         do {
+          #if (haxe_ver >= 4)
+          t = switch (t) {
+            case TAbstract(_, [p]): p;
+            default: throw 'assert';
+          }
+          #else
           t = t.reduce(true);
+          #end
         } while (t.getID(false) == 'Null');
         gen.nullable(genType(t, pos));
       }
