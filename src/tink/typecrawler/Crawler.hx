@@ -69,12 +69,8 @@ class Crawler {
 
   function doGenType(t:Type, pos:Position):Expr 
     return
-      if (t.getID(false) == 'Null') {
-        do {
-		  t = Context.followWithAbstracts(t, true);
-        } while (t.getID(false) == 'Null');
-        gen.nullable(genType(t, pos));
-      }
+      if (t.getID(false) == 'Null') 
+        gen.nullable(genType(t.reduce(), pos));
       else
         switch t.reduce() {
           
@@ -127,7 +123,7 @@ class Crawler {
             
             gen.dynAccess(genType(v, pos));
             
-          case TAbstract(_.get() => { name: 'Map', pack: [] }, [k, v]):
+          case TAbstract(_.get() => { name: 'Map', pack: [] | ['haxe', 'ds']}, [k, v]):
             
             gen.map(genType(k, pos), genType(v, pos));
             
