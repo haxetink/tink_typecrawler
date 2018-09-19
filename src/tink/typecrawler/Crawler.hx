@@ -166,6 +166,7 @@ class Crawler {
             });
           
           case v: 
+            trace(v);
             cached(t, pos, function () return switch gen.rescue(t, pos, genType) {
               case None: pos.error(gen.reject(t));
               case Some(e): e; 
