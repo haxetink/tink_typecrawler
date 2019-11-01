@@ -8,8 +8,8 @@
 	"contributors": [
 		"back2dos"
 	],
-	"version": "0.6.2",
-	"releasenote": "Reduce `Null<T>` only to `T` instead of fully.",
+	"version": "0.6.3",
+	"releasenote": "Remove leftover traces",
 	"tags": [
 		"tink",
 		"macro"
