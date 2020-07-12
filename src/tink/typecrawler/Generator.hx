@@ -28,13 +28,13 @@ typedef Generator = {
   function rescue(t:Type, pos:Position, gen:GenType):Option<Expr>;
   function reject(t:Type):String;
   function shouldIncludeField(c:ClassField, owner:Option<ClassType>):Bool;
-  function drive(type:Type, pos:Position, gen:Type->Position->Expr):Expr;
+  function drive(type:Type, pos:Position, gen:GenType):Expr;
 }
 
 typedef EnumConstructor = {
-  inlined:Bool, 
+  inlined:Bool,
   ctor: EnumField,
-  fields:Array<FieldInfo>,  
+  fields:Array<FieldInfo>,
 }
 
 class Helper {
