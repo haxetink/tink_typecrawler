@@ -28,5 +28,5 @@ class Gen {
   public function rescue(t:Type, pos:Position, gen:GenType):Option<Expr> return throw 'abstract';
   public function reject(t:Type):String return throw 'abstract';
   public function shouldIncludeField(c:ClassField, owner:Option<ClassType>):Bool return true;
-  public function drive(type:Type, pos:Position, gen:Type->Position->Expr):Expr return gen(type, pos);
+  public function drive(type:Type, pos:Position, gen:GenType):Expr return gen(type, pos);
 }
