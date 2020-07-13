@@ -20,7 +20,7 @@ class Crawler {
   var ret:Array<Field> = [];
   var gen:Generator;
   var cacheSize = 0;
-  var cache = new tink.macro.TypeMap<Expr>();
+  var cache = new tink.macro.TypeMap<Expr>(function (t) return t);
 
   static public function crawl(type:Type, pos:Position, gen:GeneratorProvider) {
     var c = new Crawler(gen);
