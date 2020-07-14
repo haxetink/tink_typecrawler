@@ -8,8 +8,8 @@
 	"contributors": [
 		"back2dos"
 	],
-	"version": "0.6.4",
-	"releasenote": "Allow carrying around access in FieldInfo.",
+	"version": "0.7.0",
+	"releasenote": "Expose crawler to generator.",
 	"tags": [
 		"tink",
 		"macro"
